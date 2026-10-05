@@ -1,0 +1,3621 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Chishti Khata</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f3f6fa;
+ color:#222
+}
+header{
+ background:#075e9b;
+ color:#fff;
+ padding:18px;
+ text-align:center;
+ font-size:25px;
+ font-weight:bold
+}
+.container{
+ width:95%;
+ max-width:950px;
+ margin:15px auto
+}
+.card{
+ background:#fff;
+ padding:15px;
+ margin-bottom:15px;
+ border-radius:12px;
+ box-shadow:0 2px 8px #0001
+}
+h2,h3{color:#075e9b;margin-top:0}
+input,select,textarea,button{
+ width:100%;
+ padding:12px;
+ margin:6px 0;
+ border:1px solid #ccc;
+ border-radius:8px;
+ font-size:16px
+}
+textarea{min-height:80px}
+button{
+ background:#075e9b;
+ color:white;
+ border:0;
+ font-weight:bold
+}
+.green{background:#159447}
+.red{background:#d93025}
+.orange{background:#e68a00}
+.gray{background:#666}
+.small{
+ width:auto;
+ padding:8px 12px;
+ font-size:14px
+}
+.menu{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:8px
+}
+.dashboard{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:10px
+}
+.stat{
+ background:#fff;
+ padding:14px;
+ border-radius:10px;
+ box-shadow:0 2px 6px #0001;
+ text-align:center
+}
+.stat b{
+ display:block;
+ font-size:19px;
+ margin-top:7px
+}
+.list-item{
+ padding:12px 0;
+ border-bottom:1px solid #ddd
+}
+.list-item:last-child{border-bottom:0}
+.hidden{display:none}
+.back{background:#666}
+.note{font-size:13px;color:#666}
+.good{color:green;font-weight:bold}
+.bad{color:red;font-weight:bold}
+.account{
+ background:#f7f9fc;
+ border:1px solid #ddd;
+ padding:12px;
+ border-radius:9px;
+ margin:7px 0
+}
+table{
+ width:100%;
+ border-collapse:collapse;
+ margin-top:10px
+}
+th,td{
+ border:1px solid #ddd;
+ padding:8px;
+ text-align:center
+}
+th{
+ background:#075e9b;
+ color:#fff
+}
+@media(max-width:500px){
+ .menu{grid-template-columns:1fr 1fr}
+ .dashboard{grid-template-columns:1fr 1fr}
+ table{font-size:12px}
+}
+</style>
+</head>
+
+<body>
+
+<header>📒 Chishti Khata</header>
+
+<div class="container">
+
+<!-- ================= HOME ================= -->
+
+<section id="home">
+
+<div class="dashboard">
+
+<div class="stat">
+کل Sale
+<b id="dashSales">0 PKR</b>
+</div>
+
+<div class="stat">
+کل Purchase
+<b id="dashPurchases">0 PKR</b>
+</div>
+
+<div class="stat">
+Gross Profit
+<b id="dashGross">0 PKR</b>
+</div>
+
+<div class="stat">
+Expenses
+<b id="dashExpenses">0 PKR</b>
+</div>
+
+<div class="stat">
+Net Profit/Loss
+<b id="dashNet">0 PKR</b>
+</div>
+
+<div class="stat">
+Stock Value
+<b id="dashStock">0 PKR</b>
+</div>
+
+</div>
+
+<div class="card">
+<h3>💰 Cash & Banks</h3>
+<div id="homeAccounts"></div>
+</div>
+
+<div class="card">
+<h3>📋 Menu</h3>
+
+<div class="menu">
+
+<button onclick="showSection('customers')">👥 Customers</button>
+
+<button onclick="showSection('vendors')">🏪 Vendors</button>
+
+<button onclick="showSection('products')">📦 Products</button>
+
+<button onclick="showSection('sale')">🛒 Sale</button>
+
+<button onclick="showSection('purchase')">📥 Purchase</button>
+
+<button onclick="showSection('expenses')">💸 Expenses</button>
+
+<button onclick="showSection('accounts')">💰 Cash / Banks</button>
+
+<button onclick="showSection('reports')">📊 Reports</button>
+
+<button onclick="showSection('history')">📜 History</button>
+
+<button onclick="backupData()">💾 Backup</button>
+
+<button onclick="document.getElementById('restoreFile').click()">♻️ Restore</button>
+
+</div>
+
+<input
+type="file"
+id="restoreFile"
+accept=".json"
+style="display:none"
+onchange="restoreData(event)"
+>
+
+</div>
+</section>
+
+
+<!-- ================= CUSTOMERS ================= -->
+
+<section id="customers" class="hidden">
+
+<button class="back" onclick="showSection('home')">⬅ واپس</button>
+
+<div class="card">
+
+<h2>👥 Customers</h2>
+
+<input id="customerName" placeholder="Customer Name">
+
+<input id="customerPhone" placeholder="Phone">
+
+<button onclick="addCustomer()">Customer Add کریں</button>
+
+</div>
+
+<div class="card">
+
+<input
+id="customerSearch"
+placeholder="Customer Search"
+oninput="renderCustomers()"
+>
+
+<div id="customerList"></div>
+
+</div>
+
+</section>
+
+
+<!-- ================= CUSTOMER DETAIL ================= -->
+
+<section id="customerDetail" class="hidden">
+
+<button class="back" onclick="showSection('customers')">⬅ واپس</button>
+
+<div class="card">
+
+<h2 id="customerDetailName"></h2>
+
+<p>
+Balance:
+<strong id="customerBalance">0</strong> PKR
+</p>
+
+<button class="green" onclick="customerReceive()">
+💰 رقم وصول
+</button>
+
+<button class="orange" onclick="customerGive()">
+➕ Customer کو رقم دیں
+</button>
+
+<button onclick="customerWhatsApp()">
+📱 WhatsApp
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>📜 Customer History</h3>
+
+<div id="customerHistory"></div>
+
+</div>
+
+</section>
+
+
+<!-- ================= VENDORS ================= -->
+
+<section id="vendors" class="hidden">
+
+<button class="back" onclick="showSection('home')">⬅ واپس</button>
+
+<div class="card">
+
+<h2>🏪 Vendors</h2>
+
+<input id="vendorName" placeholder="Vendor Name">
+
+<input id="vendorPhone" placeholder="Phone">
+
+<input id="vendorCountry" placeholder="Country">
+
+<select id="vendorType">
+<option value="Local">Local Vendor</option>
+<option value="Global">Global Vendor</option>
+</select>
+
+<select id="vendorCurrency">
+<option value="PKR">PKR</option>
+<option value="RMB">RMB</option>
+<option value="USD">USD</option>
+<option value="EUR">EUR</option>
+</select>
+
+<button onclick="addVendor()">Vendor Add کریں</button>
+
+</div>
+
+<div class="card">
+
+<input
+id="vendorSearch"
+placeholder="Vendor Search"
+oninput="renderVendors()"
+>
+
+<div id="vendorList"></div>
+
+</div>
+
+</section>
+
+
+<!-- ================= VENDOR DETAIL ================= -->
+
+<section id="vendorDetail" class="hidden">
+
+<button class="back" onclick="showSection('vendors')">⬅ واپس</button>
+
+<div class="card">
+
+<h2 id="vendorDetailName"></h2>
+
+<div id="vendorBalances"></div>
+
+<button class="green" onclick="vendorPayment()">
+💰 Vendor کو Payment
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>📜 Vendor History</h3>
+
+<div id="vendorHistory"></div>
+
+</div>
+
+</section>
+
+
+<!-- ================= PRODUCTS ================= -->
+
+<section id="products" class="hidden">
+
+<button class="back" onclick="showSection('home')">⬅ واپس</button>
+
+<div class="card">
+
+<h2>📦 Products</h2>
+
+<input id="productName" placeholder="Product Name">
+
+<input
+id="productBuy"
+type="number"
+placeholder="Purchase Cost PKR"
+>
+
+<input
+id="productSale"
+type="number"
+placeholder="Sale Rate PKR"
+>
+
+<input
+id="productStock"
+type="number"
+placeholder="Opening Stock"
+>
+
+<button onclick="addProduct()">Product Add کریں</button>
+
+</div>
+
+<div class="card">
+
+<input
+id="productSearch"
+placeholder="Product Search"
+oninput="renderProducts()"
+>
+
+<div id="productList"></div>
+
+</div>
+
+</section>
+
+
+<!-- ================= SALE ================= -->
+
+<section id="sale" class="hidden">
+
+<button class="back" onclick="showSection('home')">⬅ واپس</button>
+
+<div class="card">
+
+<h2>🛒 Sale</h2>
+
+<label>Customer</label>
+
+<select id="saleCustomer">
+<option value="">Cash Customer</option>
+</select>
+
+<label>Product</label>
+
+<select
+id="saleProduct"
+onchange="saleProductChanged()">
+<option value="">Product Select کریں</option>
+</select>
+
+<input
+id="saleQty"
+type="number"
+placeholder="Quantity"
+oninput="calculateSale()"
+>
+
+<input
+id="saleRate"
+type="number"
+placeholder="Sale Rate PKR"
+oninput="calculateSale()"
+>
+
+<select id="salePayment" onchange="salePaymentChanged()">
+<option value="cash">Cash</option>
+<option value="bank">Bank</option>
+<option value="credit">Credit / ادھار</option>
+</select>
+
+<div id="saleAccountBox">
+<select id="saleAccount"></select>
+</div>
+
+<input
+id="saleTransactionId"
+placeholder="Transaction ID"
+>
+
+<textarea
+id="saleRemarks"
+placeholder="Remarks">
+</textarea>
+
+<p>
+Total:
+<strong id="saleTotal">0 PKR</strong>
+</p>
+
+<p>
+Profit:
+<strong id="saleProfit">0 PKR</strong>
+</p>
+
+<button class="green" onclick="makeSale()">
+Sale Save کریں
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ================= PURCHASE ================= -->
+
+<section id="purchase" class="hidden">
+
+<button class="back" onclick="showSection('home')">⬅ واپس</button>
+
+<div class="card">
+
+<h2>📥 Purchase</h2>
+
+<label>Vendor</label>
+
+<select
+id="purchaseVendor"
+onchange="purchaseVendorChanged()">
+</select>
+
+<label>Product</label>
+
+<select id="purchaseProduct"></select>
+
+<input
+id="purchaseQty"
+type="number"
+placeholder="Quantity"
+oninput="calculatePurchase()"
+>
+
+<label>Currency</label>
+
+<select id="purchaseCurrency">
+<option value="PKR">PKR</option>
+<option value="RMB">RMB</option>
+<option value="USD">USD</option>
+<option value="EUR">EUR</option>
+</select>
+
+<input
+id="purchaseRate"
+type="number"
+placeholder="Rate in Currency"
+oninput="calculatePurchase()"
+>
+
+<input
+id="exchangeRate"
+type="number"
+value="1"
+placeholder="1 Currency = PKR"
+oninput="calculatePurchase()"
+>
+
+<select id="purchasePayment" onchange="purchasePaymentChanged()">
+<option value="cash">Cash</option>
+<option value="bank">Bank</option>
+<option value="credit">Credit / ادھار</option>
+</select>
+
+<div id="purchaseAccountBox">
+<select id="purchaseAccount"></select>
+</div>
+
+<input
+id="purchaseTransactionId"
+placeholder="Transaction ID"
+>
+
+<textarea
+id="purchaseRemarks"
+placeholder="Remarks">
+</textarea>
+
+<p>
+Total:
+<strong id="purchaseTotal">0</strong>
+</p>
+
+<p>
+PKR Cost:
+<strong id="purchasePKR">0 PKR</strong>
+</p>
+
+<button class="green" onclick="makePurchase()">
+Purchase Save کریں
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ================= EXPENSE ================= -->
+
+<section id="expenses" class="hidden">
+
+<button class="back" onclick="showSection('home')">⬅ واپس</button>
+
+<div class="card">
+
+<h2>💸 Expense</h2>
+
+<input
+id="expenseName"
+placeholder="Expense Name"
+>
+
+<input
+id="expenseAmount"
+type="number"
+placeholder="Amount PKR"
+>
+
+<select id="expensePayment" onchange="expensePaymentChanged()">
+<option value="cash">Cash</option>
+<option value="bank">Bank</option>
+</select>
+
+<div id="expenseAccountBox">
+<select id="expenseAccount"></select>
+</div>
+
+<input
+id="expenseTransactionId"
+placeholder="Transaction ID"
+>
+
+<textarea
+id="expenseRemarks"
+placeholder="Remarks">
+</textarea>
+
+<button onclick="addExpense()">
+Expense Save کریں
+</button>
+
+</div>
+
+<div class="card">
+
+<div id="expenseList"></div>
+
+</div>
+
+</section>
+
+
+<!-- ================= ACCOUNTS ================= -->
+
+<section id="accounts" class="hidden">
+
+<button class="back" onclick="showSection('home')">⬅ واپس</button>
+
+<div class="card">
+
+<h2>💰 Cash & Banks</h2>
+
+<div id="accountList"></div>
+
+</div>
+
+<div class="card">
+
+<h3>🏦 نیا Bank Add کریں</h3>
+
+<input
+id="newBankName"
+placeholder="Bank Name"
+>
+
+<button onclick="addBank()">
+Bank Add کریں
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>💵 Opening Balance</h3>
+
+<select id="openingAccount"></select>
+
+<input
+id="openingAmount"
+type="number"
+placeholder="Amount"
+>
+
+<input
+id="openingTransactionId"
+placeholder="Transaction ID"
+>
+
+<textarea
+id="openingRemarks"
+placeholder="Remarks">
+</textarea>
+
+<button onclick="addOpeningBalance()">
+Opening Balance Save کریں
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ================= REPORTS ================= -->
+
+<section id="reports" class="hidden">
+
+<button class="back" onclick="showSection('home')">⬅ واپس</button>
+
+<div class="card">
+
+<h2>📊 Reports</h2>
+
+<table>
+
+<tr>
+<th>Report</th>
+<th>Amount</th>
+</tr>
+
+<tr>
+<td>Total Sale</td>
+<td id="reportSales">0</td>
+</tr>
+
+<tr>
+<td>Total Purchase</td>
+<td id="reportPurchases">0</td>
+</tr>
+
+<tr>
+<td>Gross Profit</td>
+<td id="reportGross">0</td>
+</tr>
+
+<tr>
+<td>Expenses</td>
+<td id="reportExpenses">0</td>
+</tr>
+
+<tr>
+<td>Net Profit/Loss</td>
+<td id="reportNet">0</td>
+</tr>
+
+<tr>
+<td>Stock Value</td>
+<td id="reportStock">0</td>
+</tr>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- ================= HISTORY ================= -->
+
+<section id="history" class="hidden">
+
+<button class="back" onclick="showSection('home')">⬅ واپس</button>
+
+<div class="card">
+
+<h2>📜 All Transactions</h2>
+
+<div id="historyList"></div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   DATA
+===================================================== */
+
+let customers =
+JSON.parse(localStorage.getItem("ck_customers") || "null");
+
+if(!customers){
+
+    let old =
+    JSON.parse(localStorage.getItem("customers") || "[]");
+
+    customers =
+    Array.isArray(old) ? old : [];
+
+    localStorage.setItem(
+        "ck_customers",
+        JSON.stringify(customers)
+    );
+}
+
+let vendors =
+JSON.parse(localStorage.getItem("ck_vendors") || "[]");
+
+let products =
+JSON.parse(localStorage.getItem("ck_products") || "[]");
+
+let sales =
+JSON.parse(localStorage.getItem("ck_sales") || "[]");
+
+let purchases =
+JSON.parse(localStorage.getItem("ck_purchases") || "[]");
+
+let expenses =
+JSON.parse(localStorage.getItem("ck_expenses") || "[]");
+
+
+/* =====================================================
+   ACCOUNTS
+===================================================== */
+
+let accounts =
+JSON.parse(localStorage.getItem("ck_accounts") || "null");
+
+if(!accounts){
+
+    accounts = [
+
+        {
+            id:"cash",
+            name:"Cash",
+            type:"cash",
+            balance:0
+        },
+
+        {
+            id:"hbl",
+            name:"HBL",
+            type:"bank",
+            balance:0
+        },
+
+        {
+            id:"mcb",
+            name:"MCB",
+            type:"bank",
+            balance:0
+        },
+
+        {
+            id:"ubl",
+            name:"UBL",
+            type:"bank",
+            balance:0
+        },
+
+        {
+            id:"meezan",
+            name:"Meezan Bank",
+            type:"bank",
+            balance:0
+        },
+
+        {
+            id:"alfalah",
+            name:"Bank Alfalah",
+            type:"bank",
+            balance:0
+        },
+
+        {
+            id:"allied",
+            name:"Allied Bank",
+            type:"bank",
+            balance:0
+        },
+
+        {
+            id:"askari",
+            name:"Askari Bank",
+            type:"bank",
+            balance:0
+        },
+
+        {
+            id:"faysal",
+            name:"Faysal Bank",
+            type:"bank",
+            balance:0
+        },
+
+        {
+            id:"js",
+            name:"JS Bank",
+            type:"bank",
+            balance:0
+        },
+
+        {
+            id:"standard",
+            name:"Standard Chartered",
+            type:"bank",
+            balance:0
+        }
+
+    ];
+
+    localStorage.setItem(
+        "ck_accounts",
+        JSON.stringify(accounts)
+    );
+}
+
+
+/* =====================================================
+   TRANSACTIONS
+===================================================== */
+
+let transactions =
+JSON.parse(localStorage.getItem("ck_transactions") || "[]");
+
+
+let selectedCustomer=null;
+let selectedVendor=null;
+
+
+/* =====================================================
+   SAVE
+===================================================== */
+
+function saveAll(){
+
+    localStorage.setItem(
+        "ck_customers",
+        JSON.stringify(customers)
+    );
+
+    localStorage.setItem(
+        "ck_vendors",
+        JSON.stringify(vendors)
+    );
+
+    localStorage.setItem(
+        "ck_products",
+        JSON.stringify(products)
+    );
+
+    localStorage.setItem(
+        "ck_sales",
+        JSON.stringify(sales)
+    );
+
+    localStorage.setItem(
+        "ck_purchases",
+        JSON.stringify(purchases)
+    );
+
+    localStorage.setItem(
+        "ck_expenses",
+        JSON.stringify(expenses)
+    );
+
+    localStorage.setItem(
+        "ck_accounts",
+        JSON.stringify(accounts)
+    );
+
+    localStorage.setItem(
+        "ck_transactions",
+        JSON.stringify(transactions)
+    );
+
+    updateDashboard();
+}
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function money(n){
+
+    return Number(n || 0)
+    .toLocaleString("en-PK",{
+        maximumFractionDigits:2
+    });
+}
+
+
+function escapeHTML(str){
+
+    return String(str ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+
+function dateNow(){
+
+    return new Date()
+    .toLocaleString("en-PK");
+}
+
+
+function makeTransactionId(){
+
+    let d=new Date();
+
+    let date=
+        d.getFullYear()+
+        String(d.getMonth()+1).padStart(2,"0")+
+        String(d.getDate()).padStart(2,"0");
+
+    let count=
+        transactions.length+1;
+
+    return "CK-"+date+"-"+String(count).padStart(4,"0");
+}
+
+
+function accountById(id){
+
+    return accounts.find(a=>a.id===id);
+}
+
+
+function changeAccount(id,amount){
+
+    let acc=accountById(id);
+
+    if(!acc) return false;
+
+    if(amount<0 && acc.balance < Math.abs(amount)){
+        return false;
+    }
+
+    acc.balance += amount;
+
+    return true;
+}
+
+
+function accountSelectHTML(selected="cash"){
+
+    return accounts.map(a=>`
+        <option value="${a.id}"
+        ${a.id===selected?"selected":""}>
+        ${escapeHTML(a.name)}
+        </option>
+    `).join("");
+}
+
+
+/* =====================================================
+   SECTIONS
+===================================================== */
+
+function showSection(id){
+
+    document
+    .querySelectorAll(".container > section")
+    .forEach(s=>s.classList.add("hidden"));
+
+    document
+    .getElementById(id)
+    .classList.remove("hidden");
+
+    if(id==="customers") renderCustomers();
+
+    if(id==="vendors") renderVendors();
+
+    if(id==="products") renderProducts();
+
+    if(id==="sale") loadSaleForm();
+
+    if(id==="purchase") loadPurchaseForm();
+
+    if(id==="expenses") renderExpenses();
+
+    if(id==="accounts") renderAccounts();
+
+    if(id==="reports") renderReports();
+
+    if(id==="history") renderHistory();
+
+    window.scrollTo(0,0);
+}
+
+
+/* =====================================================
+   CUSTOMERS
+===================================================== */
+
+function addCustomer(){
+
+    let name=
+    document.getElementById("customerName")
+    .value.trim();
+
+    let phone=
+    document.getElementById("customerPhone")
+    .value.trim();
+
+    if(!name){
+        alert("Customer Name لکھیں");
+        return;
+    }
+
+    customers.push({
+
+        id:Date.now(),
+
+        name:name,
+
+        phone:phone,
+
+        balance:0,
+
+        history:[]
+    });
+
+    saveAll();
+
+    document.getElementById("customerName").value="";
+    document.getElementById("customerPhone").value="";
+
+    renderCustomers();
+}
+
+
+function renderCustomers(){
+
+    let box=
+    document.getElementById("customerList");
+
+    let search=
+    (
+        document.getElementById("customerSearch")
+        ?.value || ""
+    ).toLowerCase();
+
+    box.innerHTML="";
+
+    customers
+    .filter(c=>
+        c.name.toLowerCase().includes(search)
+    )
+    .forEach(c=>{
+
+        let div=document.createElement("div");
+
+        div.className="list-item";
+
+        div.innerHTML=`
+
+        <strong>
+        ${escapeHTML(c.name)}
+        </strong>
+
+        <br>
+
+        Balance:
+        <strong>
+        ${money(c.balance)} PKR
+        </strong>
+
+        <br>
+
+        <button
+        class="small"
+        onclick="openCustomer(${c.id})">
+        Open
+        </button>
+        `;
+
+        box.appendChild(div);
+    });
+}
+
+
+function openCustomer(id){
+
+    selectedCustomer=
+    customers.find(c=>c.id===id);
+
+    if(!selectedCustomer)return;
+
+    document.getElementById(
+        "customerDetailName"
+    ).innerText=selectedCustomer.name;
+
+    renderCustomerDetail();
+
+    showSection("customerDetail");
+}
+
+
+function renderCustomerDetail(){
+
+    if(!selectedCustomer)return;
+
+    document.getElementById(
+        "customerBalance"
+    ).innerText=
+    money(selectedCustomer.balance);
+
+    let box=
+    document.getElementById("customerHistory");
+
+    box.innerHTML="";
+
+    [...selectedCustomer.history]
+    .reverse()
+    .forEach(h=>{
+
+        let div=document.createElement("div");
+
+        div.className="list-item";
+
+        div.innerHTML=`
+
+        <strong>
+        ${escapeHTML(h.type)}
+        </strong>
+
+        <br>
+
+        Amount:
+        ${money(h.amount)} PKR
+
+        <br>
+
+        Payment:
+        ${escapeHTML(h.paymentMethod || "-")}
+
+        <br>
+
+        Transaction ID:
+        ${escapeHTML(h.transactionId || "-")}
+
+        <br>
+
+        Remarks:
+        ${escapeHTML(h.remarks || "-")}
+
+        <br>
+
+        <span class="note">
+        ${escapeHTML(h.date)}
+        </span>
+        `;
+
+        box.appendChild(div);
+    });
+}
+
+
+/* CUSTOMER RECEIVED */
+
+function customerReceive(){
+
+    if(!selectedCustomer)return;
+
+    let amount=
+    Number(prompt("کتنی رقم وصول ہوئی؟"));
+
+    if(!amount || amount<=0)return;
+
+    let method=
+    prompt(
+        "Payment Method لکھیں:\nCash یا Bank کا نام",
+        "Cash"
+    );
+
+    if(!method)return;
+
+    let account=
+    accounts.find(a=>
+        a.name.toLowerCase()===
+        method.toLowerCase()
+    );
+
+    if(!account){
+
+        alert(
+            "یہ Cash/Bank موجود نہیں۔\n" +
+            "Cash یا موجودہ Bank کا نام لکھیں۔"
+        );
+
+        return;
+    }
+
+    let transactionId=
+    prompt(
+        "Transaction ID",
+        makeTransactionId()
+    );
+
+    let remarks=
+    prompt("Remarks","Customer payment");
+
+    selectedCustomer.balance-=amount;
+
+    account.balance+=amount;
+
+    let h={
+
+        type:"رقم وصول ہوئی",
+
+        amount:amount,
+
+        paymentMethod:account.name,
+
+        accountId:account.id,
+
+        transactionId:
+            transactionId || makeTransactionId(),
+
+        remarks:remarks || "",
+
+        date:dateNow()
+    };
+
+    selectedCustomer.history.push(h);
+
+    transactions.push({
+
+        id:h.transactionId,
+
+        type:"Customer Payment",
+
+        person:selectedCustomer.name,
+
+        amount:amount,
+
+        method:account.name,
+
+        remarks:h.remarks,
+
+        date:h.date
+    });
+
+    saveAll();
+
+    renderCustomerDetail();
+}
+
+
+/* CUSTOMER GIVE */
+
+function customerGive(){
+
+    if(!selectedCustomer)return;
+
+    let amount=
+    Number(prompt("Customer کو کتنی رقم دینی ہے؟"));
+
+    if(!amount || amount<=0)return;
+
+    let method=
+    prompt(
+        "Payment Method:\nCash یا Bank کا نام",
+        "Cash"
+    );
+
+    let account=
+    accounts.find(a=>
+        a.name.toLowerCase()===
+        String(method).toLowerCase()
+    );
+
+    if(!account){
+
+        alert("Cash یا صحیح Bank کا نام لکھیں");
+
+        return;
+    }
+
+    if(account.balance<amount){
+
+        alert("اس Cash/Bank account میں اتنا balance نہیں ہے");
+
+        return;
+    }
+
+    let transactionId=
+    prompt(
+        "Transaction ID",
+        makeTransactionId()
+    );
+
+    let remarks=
+    prompt("Remarks","Customer refund");
+
+    selectedCustomer.balance+=amount;
+
+    account.balance-=amount;
+
+    let h={
+
+        type:"Customer کو رقم دی",
+
+        amount:amount,
+
+        paymentMethod:account.name,
+
+        accountId:account.id,
+
+        transactionId:
+            transactionId || makeTransactionId(),
+
+        remarks:remarks || "",
+
+        date:dateNow()
+    };
+
+    selectedCustomer.history.push(h);
+
+    transactions.push({
+
+        id:h.transactionId,
+
+        type:"Customer Refund",
+
+        person:selectedCustomer.name,
+
+        amount:amount,
+
+        method:account.name,
+
+        remarks:h.remarks,
+
+        date:h.date
+    });
+
+    saveAll();
+
+    renderCustomerDetail();
+}
+
+
+function customerWhatsApp(){
+
+    if(!selectedCustomer)return;
+
+    let text=
+`Chishti Khata
+
+Customer: ${selectedCustomer.name}
+
+Balance:
+${money(selectedCustomer.balance)} PKR`;
+
+    window.open(
+        "https://wa.me/?text="+
+        encodeURIComponent(text),
+        "_blank"
+    );
+}
+
+
+/* =====================================================
+   VENDORS
+===================================================== */
+
+function normalizeVendor(v){
+
+    if(!v.balanceByCurrency){
+
+        v.balanceByCurrency={
+            PKR:0,
+            RMB:0,
+            USD:0,
+            EUR:0
+        };
+
+        if(v.balance){
+
+            v.balanceByCurrency[
+                v.currency || "PKR"
+            ]=Number(v.balance);
+        }
+    }
+
+    if(!Array.isArray(v.history))
+        v.history=[];
+
+    return v;
+}
+
+
+function addVendor(){
+
+    let name=
+    document.getElementById("vendorName")
+    .value.trim();
+
+    if(!name){
+
+        alert("Vendor Name لکھیں");
+
+        return;
+    }
+
+    vendors.push({
+
+        id:Date.now(),
+
+        name:name,
+
+        phone:
+        document.getElementById("vendorPhone")
+        .value.trim(),
+
+        country:
+        document.getElementById("vendorCountry")
+        .value.trim(),
+
+        type:
+        document.getElementById("vendorType").value,
+
+        currency:
+        document.getElementById("vendorCurrency").value,
+
+        balanceByCurrency:{
+            PKR:0,
+            RMB:0,
+            USD:0,
+            EUR:0
+        },
+
+        history:[]
+    });
+
+    saveAll();
+
+    document.getElementById("vendorName").value="";
+    document.getElementById("vendorPhone").value="";
+    document.getElementById("vendorCountry").value="";
+
+    renderVendors();
+}
+
+
+function renderVendors(){
+
+    vendors.forEach(normalizeVendor);
+
+    let box=
+    document.getElementById("vendorList");
+
+    let search=
+    (
+        document.getElementById("vendorSearch")
+        ?.value || ""
+    ).toLowerCase();
+
+    box.innerHTML="";
+
+    vendors
+    .filter(v=>
+        v.name.toLowerCase().includes(search)
+    )
+    .forEach(v=>{
+
+        let balances=[];
+
+        Object.entries(v.balanceByCurrency)
+        .forEach(([cur,val])=>{
+
+            if(Number(val)!==0){
+
+                balances.push(
+                    `${cur}: ${money(val)}`
+                );
+            }
+        });
+
+        let div=document.createElement("div");
+
+        div.className="list-item";
+
+        div.innerHTML=`
+
+        <strong>
+        ${escapeHTML(v.name)}
+        </strong>
+
+        <br>
+
+        ${escapeHTML(v.type)}
+
+        ${v.country ?
+        " | "+escapeHTML(v.country) : ""}
+
+        <br>
+
+        ${balances.length ?
+        balances.join(" | ") :
+        "Balance: 0"}
+
+        <br>
+
+        <button
+        class="small"
+        onclick="openVendor(${v.id})">
+        Open
+        </button>
+        `;
+
+        box.appendChild(div);
+    });
+}
+
+
+function openVendor(id){
+
+    selectedVendor=
+    vendors.find(v=>v.id===id);
+
+    if(!selectedVendor)return;
+
+    normalizeVendor(selectedVendor);
+
+    document.getElementById(
+        "vendorDetailName"
+    ).innerText=selectedVendor.name;
+
+    renderVendorDetail();
+
+    showSection("vendorDetail");
+}
+
+
+function renderVendorDetail(){
+
+    let box=
+    document.getElementById("vendorBalances");
+
+    box.innerHTML="";
+
+    Object.entries(
+        selectedVendor.balanceByCurrency
+    )
+    .forEach(([cur,val])=>{
+
+        if(Number(val)!==0){
+
+            box.innerHTML+=`
+
+            <div class="account">
+
+            <strong>${cur}</strong>
+
+            :
+            ${money(val)}
+
+            </div>
+            `;
+        }
+    });
+
+    if(!box.innerHTML)
+        box.innerHTML="<p>کوئی بقایا نہیں</p>";
+
+    let historyBox=
+    document.getElementById("vendorHistory");
+
+    historyBox.innerHTML="";
+
+    [...selectedVendor.history]
+    .reverse()
+    .forEach(h=>{
+
+        historyBox.innerHTML+=`
+
+        <div class="list-item">
+
+        <strong>
+        ${escapeHTML(h.type)}
+        </strong>
+
+        <br>
+
+        Amount:
+        ${money(h.amount)}
+        ${escapeHTML(h.currency || "")}
+
+        <br>
+
+        Payment:
+        ${escapeHTML(h.paymentMethod || "-")}
+
+        <br>
+
+        Transaction ID:
+        ${escapeHTML(h.transactionId || "-")}
+
+        <br>
+
+        Remarks:
+        ${escapeHTML(h.remarks || "-")}
+
+        <br>
+
+        <span class="note">
+        ${escapeHTML(h.date)}
+        </span>
+
+        </div>
+        `;
+    });
+}
+
+
+/* VENDOR PAYMENT */
+
+function vendorPayment(){
+
+    if(!selectedVendor)return;
+
+    let currency=
+    prompt(
+        "Currency: PKR / RMB / USD / EUR",
+        selectedVendor.currency || "PKR"
+    );
+
+    if(!["PKR","RMB","USD","EUR"].includes(currency))
+        return;
+
+    let amount=
+    Number(
+        prompt(`کتنے ${currency} ادا کیے؟`)
+    );
+
+    if(!amount || amount<=0)return;
+
+    let balance=
+    Number(
+        selectedVendor.balanceByCurrency[currency] || 0
+    );
+
+    if(balance<amount){
+
+        alert(
+            "Vendor کا اتنا balance موجود نہیں"
+        );
+
+        return;
+    }
+
+    let method=
+    prompt(
+        "Payment Cash یا Bank کا نام",
+        "Cash"
+    );
+
+    let account=
+    accounts.find(a=>
+        a.name.toLowerCase()===
+        String(method).toLowerCase()
+    );
+
+    if(!account){
+
+        alert("Cash یا صحیح Bank کا نام لکھیں");
+
+        return;
+    }
+
+    if(account.balance<amount && currency==="PKR"){
+
+        alert("اس account میں اتنا balance نہیں");
+
+        return;
+    }
+
+    let transactionId=
+    prompt(
+        "Transaction ID",
+        makeTransactionId()
+    );
+
+    let remarks=
+    prompt("Remarks","Vendor payment");
+
+    selectedVendor.balanceByCurrency[currency]
+    -=amount;
+
+    if(currency==="PKR")
+        account.balance-=amount;
+
+    let h={
+
+        type:"Vendor Payment",
+
+        amount:amount,
+
+        currency:currency,
+
+        paymentMethod:account.name,
+
+        transactionId:
+            transactionId || makeTransactionId(),
+
+        remarks:remarks || "",
+
+        date:dateNow()
+    };
+
+    selectedVendor.history.push(h);
+
+    transactions.push({
+
+        id:h.transactionId,
+
+        type:"Vendor Payment",
+
+        person:selectedVendor.name,
+
+        amount:amount,
+
+        currency:currency,
+
+        method:account.name,
+
+        remarks:h.remarks,
+
+        date:h.date
+    });
+
+    saveAll();
+
+    renderVendorDetail();
+}
+
+
+/* =====================================================
+   PRODUCTS
+===================================================== */
+
+function addProduct(){
+
+    let name=
+    document.getElementById("productName")
+    .value.trim();
+
+    let buy=
+    Number(
+        document.getElementById("productBuy").value
+    );
+
+    let sale=
+    Number(
+        document.getElementById("productSale").value
+    );
+
+    let stock=
+    Number(
+        document.getElementById("productStock").value
+    );
+
+    if(!name){
+
+        alert("Product Name لکھیں");
+
+        return;
+    }
+
+    products.push({
+
+        id:Date.now(),
+
+        name:name,
+
+        buyPricePKR:buy || 0,
+
+        salePrice:sale || 0,
+
+        stock:stock || 0
+    });
+
+    saveAll();
+
+    document.getElementById("productName").value="";
+    document.getElementById("productBuy").value="";
+    document.getElementById("productSale").value="";
+    document.getElementById("productStock").value="";
+
+    renderProducts();
+}
+
+
+function renderProducts(){
+
+    let box=
+    document.getElementById("productList");
+
+    let search=
+    (
+        document.getElementById("productSearch")
+        ?.value || ""
+    ).toLowerCase();
+
+    box.innerHTML="";
+
+    products
+    .filter(p=>
+        p.name.toLowerCase().includes(search)
+    )
+    .forEach(p=>{
+
+        box.innerHTML+=`
+
+        <div class="list-item">
+
+        <strong>
+        ${escapeHTML(p.name)}
+        </strong>
+
+        <br>
+
+        Purchase Cost:
+        ${money(p.buyPricePKR)} PKR
+
+        <br>
+
+        Sale Rate:
+        ${money(p.salePrice)} PKR
+
+        <br>
+
+        Stock:
+        <strong>${p.stock}</strong>
+
+        <br>
+
+        Stock Value:
+        ${money(p.stock*p.buyPricePKR)} PKR
+
+        </div>
+        `;
+    });
+}
+
+
+/* =====================================================
+   SALE
+===================================================== */
+
+function loadSaleForm(){
+
+    let c=
+    document.getElementById("saleCustomer");
+
+    c.innerHTML=
+    `<option value="">Cash Customer</option>`;
+
+    customers.forEach(customer=>{
+
+        c.innerHTML+=`
+
+        <option value="${customer.id}">
+        ${escapeHTML(customer.name)}
+        </option>
+        `;
+    });
+
+
+    let p=
+    document.getElementById("saleProduct");
+
+    p.innerHTML=
+    `<option value="">Product Select کریں</option>`;
+
+    products.forEach(product=>{
+
+        p.innerHTML+=`
+
+        <option value="${product.id}">
+        ${escapeHTML(product.name)}
+        </option>
+        `;
+    });
+
+
+    document.getElementById("saleAccount").innerHTML=
+        accountSelectHTML("cash");
+
+    salePaymentChanged();
+}
+
+
+function salePaymentChanged(){
+
+    let type=
+    document.getElementById("salePayment").value;
+
+    let box=
+    document.getElementById("saleAccountBox");
+
+    if(type==="bank"){
+
+        box.style.display="block";
+
+        document.getElementById("saleAccount")
+        .innerHTML=
+        accounts
+        .filter(a=>a.type==="bank")
+        .map(a=>`
+        <option value="${a.id}">
+        ${escapeHTML(a.name)}
+        </option>
+        `)
+        .join("");
+
+    }else{
+
+        box.style.display=
+        type==="cash" ? "block" : "none";
+
+        if(type==="cash"){
+
+            document.getElementById("saleAccount")
+            .innerHTML=
+            `<option value="cash">Cash</option>`;
+        }
+    }
+}
+
+
+function saleProductChanged(){
+
+    let product=
+    products.find(p=>
+        p.id===
+        Number(
+            document.getElementById("saleProduct").value
+        )
+    );
+
+    if(product){
+
+        document.getElementById("saleRate")
+        .value=product.salePrice;
+    }
+
+    calculateSale();
+}
+
+
+function calculateSale(){
+
+    let qty=
+    Number(
+        document.getElementById("saleQty").value
+    );
+
+    let rate=
+    Number(
+        document.getElementById("saleRate").value
+    );
+
+    let product=
+    products.find(p=>
+        p.id===
+        Number(
+            document.getElementById("saleProduct").value
+        )
+    );
+
+    let total=qty*rate;
+
+    let profit=0;
+
+    if(product){
+
+        profit=
+        total-
+        (
+            qty*
+            Number(product.buyPricePKR || 0)
+        );
+    }
+
+    document.getElementById("saleTotal")
+    .innerText=
+    money(total)+" PKR";
+
+    document.getElementById("saleProfit")
+    .innerText=
+    money(profit)+" PKR";
+}
+
+
+function makeSale(){
+
+    let customerId=
+    Number(
+        document.getElementById("saleCustomer").value
+    );
+
+    let productId=
+    Number(
+        document.getElementById("saleProduct").value
+    );
+
+    let qty=
+    Number(
+        document.getElementById("saleQty").value
+    );
+
+    let rate=
+    Number(
+        document.getElementById("saleRate").value
+    );
+
+    let payment=
+    document.getElementById("salePayment").value;
+
+    let product=
+    products.find(p=>p.id===productId);
+
+    if(!product){
+
+        alert("Product select کریں");
+
+        return;
+    }
+
+    if(!qty || qty<=0){
+
+        alert("Quantity درست لکھیں");
+
+        return;
+    }
+
+    if(qty>product.stock){
+
+        alert("Stock کم ہے");
+
+        return;
+    }
+
+    if(!rate || rate<=0){
+
+        alert("Sale Rate لکھیں");
+
+        return;
+    }
+
+    if(payment==="credit" && !customerId){
+
+        alert(
+            "Credit Sale کے لیے Customer select کریں"
+        );
+
+        return;
+    }
+
+
+    let account=null;
+
+    if(payment==="cash"){
+
+        account=
+        accountById("cash");
+    }
+
+    if(payment==="bank"){
+
+        account=
+        accountById(
+            document.getElementById("saleAccount").value
+        );
+
+        if(!account){
+
+            alert("Bank select کریں");
+
+            return;
+        }
+    }
+
+
+    let total=
+    qty*rate;
+
+    let costRate=
+    Number(product.buyPricePKR || 0);
+
+    let cost=
+    qty*costRate;
+
+    let profit=
+    total-cost;
+
+    let transactionId=
+    document.getElementById("saleTransactionId")
+    .value.trim() ||
+    makeTransactionId();
+
+    let remarks=
+    document.getElementById("saleRemarks")
+    .value.trim();
+
+
+    /* CASH / BANK SALE */
+
+    if(payment!=="credit"){
+
+        account.balance+=total;
+    }
+
+
+    product.stock-=qty;
+
+
+    let sale={
+
+        id:Date.now(),
+
+        transactionId:transactionId,
+
+        customerId:
+        customerId || null,
+
+        customer:
+        customerId ?
+        customers.find(c=>c.id===customerId)?.name :
+        "Cash Customer",
+
+        productId:product.id,
+
+        product:product.name,
+
+        quantity:qty,
+
+        rate:rate,
+
+        total:total,
+
+        costRate:costRate,
+
+        cost:cost,
+
+        profit:profit,
+
+        payment:payment,
+
+        paymentMethod:
+        account ? account.name : "Credit",
+
+        accountId:
+        account ? account.id : null,
+
+        remarks:remarks,
+
+        date:dateNow()
+    };
+
+
+    sales.push(sale);
+
+
+    /* CREDIT SALE */
+
+    if(payment==="credit"){
+
+        let customer=
+        customers.find(c=>c.id===customerId);
+
+        customer.balance+=total;
+
+        customer.history.push({
+
+            type:"Sale - ادھار",
+
+            amount:total,
+
+            paymentMethod:"Credit",
+
+            transactionId:transactionId,
+
+            remarks:remarks,
+
+            detail:
+            `${product.name} × ${qty} @ ${rate}`,
+
+            date:sale.date
+        });
+    }
+
+
+    transactions.push({
+
+        id:transactionId,
+
+        type:"Sale",
+
+        person:
+        sale.customer,
+
+        amount:total,
+
+        method:
+        sale.paymentMethod,
+
+        remarks:remarks,
+
+        date:sale.date
+    });
+
+
+    saveAll();
+
+    alert(
+        "Sale محفوظ ہوگئی\nTransaction ID: "+
+        transactionId
+    );
+
+
+    document.getElementById("saleQty").value="";
+    document.getElementById("saleTransactionId").value="";
+    document.getElementById("saleRemarks").value="";
+
+    calculateSale();
+
+    loadSaleForm();
+}
+
+
+/* =====================================================
+   PURCHASE
+===================================================== */
+
+function loadPurchaseForm(){
+
+    let v=
+    document.getElementById("purchaseVendor");
+
+    v.innerHTML=
+    `<option value="">Vendor Select کریں</option>`;
+
+    vendors.forEach(vendor=>{
+
+        v.innerHTML+=`
+
+        <option value="${vendor.id}">
+        ${escapeHTML(vendor.name)}
+        </option>
+        `;
+    });
+
+
+    let p=
+    document.getElementById("purchaseProduct");
+
+    p.innerHTML=
+    `<option value="">Product Select کریں</option>`;
+
+    products.forEach(product=>{
+
+        p.innerHTML+=`
+
+        <option value="${product.id}">
+        ${escapeHTML(product.name)}
+        </option>
+        `;
+    });
+
+
+    document.getElementById("purchaseAccount")
+    .innerHTML=
+    accountSelectHTML("cash");
+
+    purchasePaymentChanged();
+
+    purchaseVendorChanged();
+}
+
+
+function purchasePaymentChanged(){
+
+    let type=
+    document.getElementById("purchasePayment").value;
+
+    let box=
+    document.getElementById("purchaseAccountBox");
+
+    if(type==="bank"){
+
+        box.style.display="block";
+
+        document.getElementById("purchaseAccount")
+        .innerHTML=
+
+        accounts
+        .filter(a=>a.type==="bank")
+        .map(a=>`
+        <option value="${a.id}">
+        ${escapeHTML(a.name)}
+        </option>
+        `)
+        .join("");
+
+    }else{
+
+        box.style.display=
+        type==="cash" ? "block" : "none";
+
+        if(type==="cash"){
+
+            document.getElementById("purchaseAccount")
+            .innerHTML=
+            `<option value="cash">Cash</option>`;
+        }
+    }
+}
+
+
+function purchaseVendorChanged(){
+
+    let vendor=
+    vendors.find(v=>
+        v.id===
+        Number(
+            document.getElementById("purchaseVendor").value
+        )
+    );
+
+    if(vendor){
+
+        normalizeVendor(vendor);
+
+        document.getElementById(
+            "purchaseCurrency"
+        ).value=
+        vendor.currency || "PKR";
+
+        document.getElementById(
+            "exchangeRate"
+        ).value=
+        vendor.currency==="PKR" ? 1 : "";
+    }
+
+    calculatePurchase();
+}
+
+
+function calculatePurchase(){
+
+    let qty=
+    Number(
+        document.getElementById("purchaseQty").value
+    );
+
+    let rate=
+    Number(
+        document.getElementById("purchaseRate").value
+    );
+
+    let ex=
+    Number(
+        document.getElementById("exchangeRate").value
+    );
+
+    let total=
+    qty*rate;
+
+    let pkr=
+    total*ex;
+
+    document.getElementById("purchaseTotal")
+    .innerText=
+    money(total);
+
+    document.getElementById("purchasePKR")
+    .innerText=
+    money(pkr)+" PKR";
+}
+
+
+function makePurchase(){
+
+    let vendorId=
+    Number(
+        document.getElementById("purchaseVendor").value
+    );
+
+    let productId=
+    Number(
+        document.getElementById("purchaseProduct").value
+    );
+
+    let qty=
+    Number(
+        document.getElementById("purchaseQty").value
+    );
+
+    let currency=
+    document.getElementById("purchaseCurrency").value;
+
+    let rate=
+    Number(
+        document.getElementById("purchaseRate").value
+    );
+
+    let exchange=
+    Number(
+        document.getElementById("exchangeRate").value
+    );
+
+    let payment=
+    document.getElementById("purchasePayment").value;
+
+
+    let vendor=
+    vendors.find(v=>v.id===vendorId);
+
+    let product=
+    products.find(p=>p.id===productId);
+
+
+    if(!vendor){
+
+        alert("Vendor select کریں");
+
+        return;
+    }
+
+    if(!product){
+
+        alert("Product select کریں");
+
+        return;
+    }
+
+    if(!qty || qty<=0){
+
+        alert("Quantity درست لکھیں");
+
+        return;
+    }
+
+    if(!rate || rate<=0){
+
+        alert("Purchase Rate لکھیں");
+
+        return;
+    }
+
+    if(!exchange || exchange<=0){
+
+        alert("Exchange Rate درست لکھیں");
+
+        return;
+    }
+
+
+    normalizeVendor(vendor);
+
+
+    let total=
+    qty*rate;
+
+    let totalPKR=
+    total*exchange;
+
+
+    let account=null;
+
+
+    if(payment==="cash"){
+
+        account=
+        accountById("cash");
+    }
+
+    if(payment==="bank"){
+
+        account=
+        accountById(
+            document.getElementById(
+                "purchaseAccount"
+            ).value
+        );
+
+        if(!account){
+
+            alert("Bank select کریں");
+
+            return;
+        }
+    }
+
+
+    /*
+      صرف PKR cash/bank سے payment
+      account balance میں جائے گی۔
+      اگر RMB/USD purchase ہے تو exchange کے
+      ذریعے PKR cost record ہوگی۔
+    */
+
+    if(payment!=="credit"){
+
+        if(currency!=="PKR"){
+
+            /*
+             Global currency payment کو
+             cash/bank PKR balance میں
+             automatically کم نہیں کیا جائے گا۔
+             کیونکہ account PKR میں ہے۔
+            */
+
+        }else{
+
+            if(account.balance<totalPKR){
+
+                alert(
+                    "اس Cash/Bank account میں اتنا balance نہیں"
+                );
+
+                return;
+            }
+
+            account.balance-=totalPKR;
+        }
+    }
+
+
+    product.stock+=qty;
+
+    product.buyPricePKR=
+    totalPKR/qty;
+
+
+    let transactionId=
+    document.getElementById(
+        "purchaseTransactionId"
+    ).value.trim() ||
+    makeTransactionId();
+
+
+    let remarks=
+    document.getElementById(
+        "purchaseRemarks"
+    ).value.trim();
+
+
+    let purchase={
+
+        id:Date.now(),
+
+        transactionId:transactionId,
+
+        vendorId:vendor.id,
+
+        vendor:vendor.name,
+
+        productId:product.id,
+
+        product:product.name,
+
+        quantity:qty,
+
+        currency:currency,
+
+        rate:rate,
+
+        exchangeRate:exchange,
+
+        total:total,
+
+        totalPKR:totalPKR,
+
+        payment:payment,
+
+        paymentMethod:
+        account ? account.name : "Credit",
+
+        accountId:
+        account ? account.id : null,
+
+        remarks:remarks,
+
+        date:dateNow()
+    };
+
+
+    purchases.push(purchase);
+
+
+    if(payment==="credit"){
+
+        vendor.balanceByCurrency[currency]
+        +=total;
+
+        vendor.history.push({
+
+            type:"Purchase - ادھار",
+
+            amount:total,
+
+            currency:currency,
+
+            paymentMethod:"Credit",
+
+            transactionId:transactionId,
+
+            remarks:remarks,
+
+            detail:
+            `${product.name} × ${qty} | PKR Cost ${money(totalPKR)}`,
+
+            date:purchase.date
+        });
+    }
+
+
+    transactions.push({
+
+        id:transactionId,
+
+        type:"Purchase",
+
+        person:vendor.name,
+
+        amount:total,
+
+        currency:currency,
+
+        method:
+        purchase.paymentMethod,
+
+        remarks:remarks,
+
+        date:purchase.date
+    });
+
+
+    saveAll();
+
+
+    alert(
+        "Purchase محفوظ ہوگئی\nTransaction ID: "+
+        transactionId
+    );
+
+
+    document.getElementById("purchaseQty").value="";
+    document.getElementById("purchaseRate").value="";
+    document.getElementById("purchaseTransactionId").value="";
+    document.getElementById("purchaseRemarks").value="";
+
+    calculatePurchase();
+
+    loadPurchaseForm();
+}
+
+
+/* =====================================================
+   EXPENSES
+===================================================== */
+
+function expensePaymentChanged(){
+
+    let type=
+    document.getElementById(
+        "expensePayment"
+    ).value;
+
+    let box=
+    document.getElementById(
+        "expenseAccountBox"
+    );
+
+    if(type==="bank"){
+
+        box.style.display="block";
+
+        document.getElementById(
+            "expenseAccount"
+        ).innerHTML=
+
+        accounts
+        .filter(a=>a.type==="bank")
+        .map(a=>`
+        <option value="${a.id}">
+        ${escapeHTML(a.name)}
+        </option>
+        `)
+        .join("");
+
+    }else{
+
+        box.style.display="block";
+
+        document.getElementById(
+            "expenseAccount"
+        ).innerHTML=
+        `<option value="cash">Cash</option>`;
+    }
+}
+
+
+function addExpense(){
+
+    let name=
+    document.getElementById(
+        "expenseName"
+    ).value.trim();
+
+    let amount=
+    Number(
+        document.getElementById(
+            "expenseAmount"
+        ).value
+    );
+
+    let payment=
+    document.getElementById(
+        "expensePayment"
+    ).value;
+
+    if(!name){
+
+        alert("Expense Name لکھیں");
+
+        return;
+    }
+
+    if(!amount || amount<=0){
+
+        alert("Amount لکھیں");
+
+        return;
+    }
+
+
+    let account=
+    accountById(
+        document.getElementById(
+            "expenseAccount"
+        ).value
+    );
+
+
+    if(!account){
+
+        alert("Cash/Bank select کریں");
+
+        return;
+    }
+
+
+    if(account.balance<amount){
+
+        alert(
+            "اس Cash/Bank account میں اتنا balance نہیں"
+        );
+
+        return;
+    }
+
+
+    let transactionId=
+    document.getElementById(
+        "expenseTransactionId"
+    ).value.trim() ||
+    makeTransactionId();
+
+
+    let remarks=
+    document.getElementById(
+        "expenseRemarks"
+    ).value.trim();
+
+
+    account.balance-=amount;
+
+
+    let expense={
+
+        id:Date.now(),
+
+        transactionId:transactionId,
+
+        name:name,
+
+        amount:amount,
+
+        paymentMethod:account.name,
+
+        accountId:account.id,
+
+        remarks:remarks,
+
+        date:dateNow()
+    };
+
+
+    expenses.push(expense);
+
+
+    transactions.push({
+
+        id:transactionId,
+
+        type:"Expense",
+
+        person:name,
+
+        amount:amount,
+
+        method:account.name,
+
+        remarks:remarks,
+
+        date:expense.date
+    });
+
+
+    saveAll();
+
+
+    alert(
+        "Expense محفوظ ہوگیا\nTransaction ID: "+
+        transactionId
+    );
+
+
+    document.getElementById(
+        "expenseName"
+    ).value="";
+
+    document.getElementById(
+        "expenseAmount"
+    ).value="";
+
+    document.getElementById(
+        "expenseTransactionId"
+    ).value="";
+
+    document.getElementById(
+        "expenseRemarks"
+    ).value="";
+
+    renderExpenses();
+}
+
+
+function renderExpenses(){
+
+    let box=
+    document.getElementById(
+        "expenseList"
+    );
+
+    box.innerHTML="";
+
+
+    [...expenses]
+    .reverse()
+    .forEach(e=>{
+
+        box.innerHTML+=`
+
+        <div class="list-item">
+
+        <strong>
+        ${escapeHTML(e.name)}
+        </strong>
+
+        <br>
+
+        Amount:
+        ${money(e.amount)} PKR
+
+        <br>
+
+        Payment:
+        ${escapeHTML(e.paymentMethod)}
+
+        <br>
+
+        Transaction ID:
+        ${escapeHTML(e.transactionId)}
+
+        <br>
+
+        Remarks:
+        ${escapeHTML(e.remarks || "-")}
+
+        <br>
+
+        <span class="note">
+        ${escapeHTML(e.date)}
+        </span>
+
+        </div>
+        `;
+    });
+}
+
+
+/* =====================================================
+   CASH & BANKS
+===================================================== */
+
+function renderAccounts(){
+
+    let box=
+    document.getElementById("accountList");
+
+    box.innerHTML="";
+
+
+    accounts.forEach(a=>{
+
+        box.innerHTML+=`
+
+        <div class="account">
+
+        ${a.type==="cash" ? "💵" : "🏦"}
+
+        <strong>
+        ${escapeHTML(a.name)}
+        </strong>
+
+        <br>
+
+        Balance:
+        <strong>
+        ${money(a.balance)} PKR
+        </strong>
+
+        </div>
+        `;
+    });
+
+
+    document.getElementById(
+        "openingAccount"
+    ).innerHTML=
+    accountSelectHTML("cash");
+}
+
+
+function addBank(){
+
+    let name=
+    document.getElementById(
+        "newBankName"
+    ).value.trim();
+
+    if(!name){
+
+        alert("Bank Name لکھیں");
+
+        return;
+    }
+
+
+    let exists=
+    accounts.some(a=>
+        a.name.toLowerCase()===
+        name.toLowerCase()
+    );
+
+
+    if(exists){
+
+        alert("یہ Bank پہلے سے موجود ہے");
+
+        return;
+    }
+
+
+    accounts.push({
+
+        id:"bank_"+Date.now(),
+
+        name:name,
+
+        type:"bank",
+
+        balance:0
+    });
+
+
+    saveAll();
+
+    document.getElementById(
+        "newBankName"
+    ).value="";
+
+    renderAccounts();
+
+    alert("Bank Add ہوگیا");
+}
+
+
+function addOpeningBalance(){
+
+    let id=
+    document.getElementById(
+        "openingAccount"
+    ).value;
+
+    let amount=
+    Number(
+        document.getElementById(
+            "openingAmount"
+        ).value
+    );
+
+    if(!amount || amount<=0){
+
+        alert("Amount لکھیں");
+
+        return;
+    }
+
+
+    let account=
+    accountById(id);
+
+    if(!account)return;
+
+
+    let transactionId=
+    document.getElementById(
+        "openingTransactionId"
+    ).value.trim() ||
+    makeTransactionId();
+
+
+    let remarks=
+    document.getElementById(
+        "openingRemarks"
+    ).value.trim();
+
+
+    account.balance+=amount;
+
+
+    transactions.push({
+
+        id:transactionId,
+
+        type:"Opening Balance",
+
+        person:account.name,
+
+        amount:amount,
+
+        method:account.name,
+
+        remarks:remarks,
+
+        date:dateNow()
+    });
+
+
+    saveAll();
+
+
+    alert(
+        "Opening Balance Save ہوگیا\n"+
+        "Transaction ID: "+
+        transactionId
+    );
+
+
+    document.getElementById(
+        "openingAmount"
+    ).value="";
+
+    document.getElementById(
+        "openingTransactionId"
+    ).value="";
+
+    document.getElementById(
+        "openingRemarks"
+    ).value="";
+
+    renderAccounts();
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function getTotals(){
+
+    let totalSales=
+    sales.reduce(
+        (sum,s)=>
+        sum+Number(s.total || 0),
+        0
+    );
+
+
+    let totalPurchases=
+    purchases.reduce(
+        (sum,p)=>
+        sum+Number(p.totalPKR || 0),
+        0
+    );
+
+
+    let grossProfit=
+    sales.reduce(
+        (sum,s)=>
+        sum+Number(s.profit || 0),
+        0
+    );
+
+
+    let totalExpenses=
+    expenses.reduce(
+        (sum,e)=>
+        sum+Number(e.amount || 0),
+        0
+    );
+
+
+    let netProfit=
+    grossProfit-totalExpenses;
+
+
+    let stockValue=
+    products.reduce(
+        (sum,p)=>
+        sum+
+        Number(p.stock || 0)*
+        Number(p.buyPricePKR || 0),
+        0
+    );
+
+
+    return{
+
+        totalSales,
+
+        totalPurchases,
+
+        grossProfit,
+
+        totalExpenses,
+
+        netProfit,
+
+        stockValue
+    };
+}
+
+
+function updateDashboard(){
+
+    let t=getTotals();
+
+
+    document.getElementById(
+        "dashSales"
+    ).innerText=
+    money(t.totalSales)+" PKR";
+
+
+    document.getElementById(
+        "dashPurchases"
+    ).innerText=
+    money(t.totalPurchases)+" PKR";
+
+
+    document.getElementById(
+        "dashGross"
+    ).innerText=
+    money(t.grossProfit)+" PKR";
+
+
+    document.getElementById(
+        "dashExpenses"
+    ).innerText=
+    money(t.totalExpenses)+" PKR";
+
+
+    document.getElementById(
+        "dashNet"
+    ).innerText=
+    money(t.netProfit)+" PKR";
+
+
+    document.getElementById(
+        "dashStock"
+    ).innerText=
+    money(t.stockValue)+" PKR";
+
+
+    let box=
+    document.getElementById(
+        "homeAccounts"
+    );
+
+    if(box){
+
+        box.innerHTML="";
+
+        accounts.forEach(a=>{
+
+            box.innerHTML+=`
+
+            <div class="account">
+
+            ${a.type==="cash" ? "💵" : "🏦"}
+
+            <strong>
+            ${escapeHTML(a.name)}
+            </strong>
+
+            :
+            ${money(a.balance)} PKR
+
+            </div>
+            `;
+        });
+    }
+}
+
+
+/* =====================================================
+   REPORTS
+===================================================== */
+
+function renderReports(){
+
+    let t=getTotals();
+
+
+    document.getElementById(
+        "reportSales"
+    ).innerText=
+    money(t.totalSales)+" PKR";
+
+
+    document.getElementById(
+        "reportPurchases"
+    ).innerText=
+    money(t.totalPurchases)+" PKR";
+
+
+    document.getElementById(
+        "reportGross"
+    ).innerText=
+    money(t.grossProfit)+" PKR";
+
+
+    document.getElementById(
+        "reportExpenses"
+    ).innerText=
+    money(t.totalExpenses)+" PKR";
+
+
+    document.getElementById(
+        "reportNet"
+    ).innerText=
+    money(t.netProfit)+" PKR";
+
+
+    document.getElementById(
+        "reportStock"
+    ).innerText=
+    money(t.stockValue)+" PKR";
+}
+
+
+/* =====================================================
+   ALL HISTORY
+===================================================== */
+
+function renderHistory(){
+
+    let box=
+    document.getElementById(
+        "historyList"
+    );
+
+    box.innerHTML="";
+
+
+    [...transactions]
+    .reverse()
+    .forEach(t=>{
+
+        box.innerHTML+=`
+
+        <div class="list-item">
+
+        <strong>
+        ${escapeHTML(t.type)}
+        </strong>
+
+        <br>
+
+        Name:
+        ${escapeHTML(t.person || "-")}
+
+        <br>
+
+        Amount:
+        ${money(t.amount)}
+        ${t.currency || "PKR"}
+
+        <br>
+
+        Payment:
+        ${escapeHTML(t.method || "-")}
+
+        <br>
+
+        Transaction ID:
+        <strong>
+        ${escapeHTML(t.id)}
+        </strong>
+
+        <br>
+
+        Remarks:
+        ${escapeHTML(t.remarks || "-")}
+
+        <br>
+
+        <span class="note">
+        ${escapeHTML(t.date)}
+        </span>
+
+        </div>
+        `;
+    });
+
+
+    if(!transactions.length){
+
+        box.innerHTML=
+        "<p>کوئی transaction نہیں</p>";
+    }
+}
+
+
+/* =====================================================
+   BACKUP
+===================================================== */
+
+function backupData(){
+
+    let data={
+
+        app:"Chishti Khata",
+
+        version:4,
+
+        backupDate:
+        new Date().toISOString(),
+
+        customers:customers,
+
+        vendors:vendors,
+
+        products:products,
+
+        sales:sales,
+
+        purchases:purchases,
+
+        expenses:expenses,
+
+        accounts:accounts,
+
+        transactions:transactions
+    };
+
+
+    let blob=
+    new Blob(
+        [JSON.stringify(data,null,2)],
+        {
+            type:"application/json"
+        }
+    );
+
+
+    let url=
+    URL.createObjectURL(blob);
+
+
+    let a=
+    document.createElement("a");
+
+    a.href=url;
+
+    a.download=
+    "Chishti-Khata-Backup.json";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+
+function restoreData(event){
+
+    let file=
+    event.target.files[0];
+
+    if(!file)return;
+
+
+    let reader=
+    new FileReader();
+
+
+    reader.onload=function(e){
+
+        try{
+
+            let data=
+            JSON.parse(e.target.result);
+
+
+            if(Array.isArray(data)){
+
+                customers=data;
+
+            }else{
+
+                if(data.customers)
+                    customers=data.customers;
+
+                if(data.vendors)
+                    vendors=data.vendors;
+
+                if(data.products)
+                    products=data.products;
+
+                if(data.sales)
+                    sales=data.sales;
+
+                if(data.purchases)
+                    purchases=data.purchases;
+
+                if(data.expenses)
+                    expenses=data.expenses;
+
+                if(data.accounts)
+                    accounts=data.accounts;
+
+                if(data.transactions)
+                    transactions=data.transactions;
+            }
+
+
+            saveAll();
+
+
+            alert(
+                "Backup Restore ہوگیا"
+            );
+
+
+            location.reload();
+
+        }catch(error){
+
+            alert(
+                "Backup file درست نہیں ہے"
+            );
+        }
+    };
+
+
+    reader.readAsText(file);
+}
+
+
+/* =====================================================
+   OLD DATA COMPATIBILITY
+===================================================== */
+
+customers.forEach(c=>{
+
+    if(typeof c.balance!=="number")
+        c.balance=
+        Number(c.balance || 0);
+
+    if(!Array.isArray(c.history))
+        c.history=[];
+});
+
+
+vendors.forEach(normalizeVendor);
+
+
+products.forEach(p=>{
+
+    if(p.buyPricePKR===undefined)
+        p.buyPricePKR=
+        Number(p.buyPrice || 0);
+
+    if(p.salePrice===undefined)
+        p.salePrice=
+        Number(p.sale || 0);
+
+    if(p.stock===undefined)
+        p.stock=0;
+});
+
+
+/* =====================================================
+   START
+===================================================== */
+
+saveAll();
+
+updateDashboard();
+
+</script>
+
+</body>
+</html>
