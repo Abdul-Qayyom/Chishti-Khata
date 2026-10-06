@@ -1,15 +1,135 @@
 <!DOCTYPE html>
 <script>
-const USERNAME = "Abdul Qayyom";
-const PASSWORD = "Abdul@";
+const USERNAME = "0397";
+const PASSWORD = "0397";
 
-const login = prompt("Chishti Khata Login\nUsername:");
-if (login !== USERNAME) {
-    document.body.innerHTML = "<h2>Access Denied</h2>";
-} else {
-    const password = prompt("Password:");
-    if (password !== PASSWORD) {
-        document.body.innerHTML = "<h2>Wrong Password</h2>";
+document.write(`
+<style>
+.login-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background:
+        radial-gradient(circle at top left, #5b21b6, transparent 35%),
+        radial-gradient(circle at bottom right, #006d77, transparent 35%),
+        #080b18;
+    font-family: Arial, sans-serif;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 360px;
+    padding: 35px 28px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.20);
+    border-radius: 25px;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.5);
+    backdrop-filter: blur(15px);
+    text-align: center;
+}
+
+.login-logo {
+    font-size: 34px;
+    font-weight: bold;
+    color: #7c5cff;
+    margin-bottom: 8px;
+}
+
+.login-box h2 {
+    color: white;
+    margin: 0 0 8px;
+    font-size: 25px;
+}
+
+.login-box p {
+    color: #bfc7e8;
+    margin-bottom: 25px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 14px 15px;
+    margin: 8px 0;
+    border: 1px solid #3b4670;
+    border-radius: 12px;
+    background: #11172d;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.login-box input:focus {
+    border-color: #00e5ff;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(90deg, #7c5cff, #00c6ff);
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-box button:active {
+    transform: scale(0.98);
+}
+
+#loginMessage {
+    color: #ff6b81;
+    min-height: 20px;
+    margin: 15px 0 0;
+}
+</style>
+
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+
+        <div class="login-logo">SufiLabs</div>
+
+        <h2>Welcome Back</h2>
+        <p>Please login to continue</p>
+
+        <input
+            type="text"
+            id="loginUsername"
+            placeholder="Username"
+            autocomplete="username"
+        >
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
+
+        <button onclick="checkLogin()">Login</button>
+
+        <p id="loginMessage"></p>
+
+    </div>
+</div>
+`);
+
+function checkLogin() {
+    const username = document.getElementById("loginUsername").value;
+    const password = document.getElementById("loginPassword").value;
+    const message = document.getElementById("loginMessage");
+
+    if (username === USERNAME && password === PASSWORD) {
+        document.getElementById("loginScreen").remove();
+    } else {
+        message.textContent = "Incorrect username or password";
     }
 }
 </script>
